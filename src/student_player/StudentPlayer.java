@@ -2,8 +2,11 @@ package student_player;
 
 import boardgame.Move;
 
+import pentago_twist.PentagoMove;
 import pentago_twist.PentagoPlayer;
 import pentago_twist.PentagoBoardState;
+
+import java.util.ArrayList;
 
 /** A player file submitted by a student. */
 public class StudentPlayer extends PentagoPlayer {
@@ -14,7 +17,7 @@ public class StudentPlayer extends PentagoPlayer {
      * associate you with your agent. The constructor should do nothing else.
      */
     public StudentPlayer() {
-        super("xxxxxxxxx");
+        super("260827484");
     }
 
     /**
@@ -23,15 +26,29 @@ public class StudentPlayer extends PentagoPlayer {
      * make decisions.
      */
     public Move chooseMove(PentagoBoardState boardState) {
-        // You probably will make separate functions in MyTools.
-        // For example, maybe you'll need to load some pre-processed best opening
-        // strategies...
-        MyTools.getSomething();
+        // initializing variables
+        MyTools.setColors(boardState);
+        PentagoBoardState.Piece opColor = MyTools.getOpColor();
 
-        // Is random the best you can do?
-        Move myMove = boardState.getRandomMove();
+        // MINIMAX DECISION ALGORITHM
+        ArrayList<PentagoMove> legalMoves = boardState.getAllLegalMoves();
 
+        PentagoMove bestMove = legalMoves.get(0);
+        int bestVal = Integer.MIN_VALUE;
+
+        int alpha = Integer.MIN_VALUE;
+        int beta = Integer.MAX_VALUE;
+
+        for(PentagoMove move : legalMoves){
+            PentagoBoardState cloneState = (PentagoBoardState) boardState.clone();
+            cloneState.processMove(move);
+            int alphabetaVal = MyTools.alphabeta(cloneState, 1, alpha, beta, opColor);
+            if(alphabetaVal > bestVal){
+                bestVal = alphabetaVal;
+                bestMove = move;
+            }
+        }
         // Return your move to be processed by the server.
-        return myMove;
+        return bestMove;
     }
 }
